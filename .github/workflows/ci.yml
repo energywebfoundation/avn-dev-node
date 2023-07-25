@@ -1,11 +1,9 @@
 on:
   workflow_dispatch:
   pull_request:
-    branches:
-      - main
+    branches: [main, dev]
   push:
-    branches:
-      - main
+    branches: [main, dev]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
@@ -13,10 +11,10 @@ concurrency:
 
 jobs:
   check-code:
-    if: github.ref != 'refs/heads/main'
     uses: ./.github/workflows/cargo-check.yml
 
   build-code:
+    if: github.ref != 'refs/heads/dev'
     uses: ./.github/workflows/cargo-build.yml
 
   test-code:
