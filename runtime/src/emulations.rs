@@ -4,6 +4,7 @@ use frame_support::pallet_prelude::{DispatchError, DispatchResult};
 use pallet_ethereum_transactions::CandidateTransactionSubmitter;
 
 use pallet_ethereum_transactions::ethereum_transaction::{EthTransactionType, TransactionId};
+use sp_avn_common::event_types::EthEventId;
 use sp_core::ecdsa;
 
 pub struct CandidateTransactionSubmitterEmulation;
@@ -29,4 +30,12 @@ impl CandidateTransactionSubmitter<AccountId> for CandidateTransactionSubmitterE
 
 	#[cfg(feature = "runtime-benchmarks")]
 	fn set_transaction_id(candidate_type: &EthTransactionType, id: TransactionId) {}
+}
+
+pub struct ProcessedEventsCheckerEmulation;
+
+impl pallet_avn::ProcessedEventsChecker for ProcessedEventsCheckerEmulation {
+	fn check_event(_event_id: &EthEventId) -> bool {
+		return false
+	}
 }

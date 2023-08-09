@@ -1,14 +1,14 @@
 use avn_dev_runtime::{
 	constants::{currency::AVT, time::MINUTES},
-	AccountId, AuraId, AvnId, Balance, BlockNumber, Signature, SudoConfig, SummaryConfig,
-	TokenManagerConfig, EXISTENTIAL_DEPOSIT,
+	AccountId, AuraId, AvnId, Balance, BlockNumber, ParachainStakingConfig, Signature, SudoConfig,
+	SummaryConfig, TokenManagerConfig, ValidatorsManagerConfig, EXISTENTIAL_DEPOSIT,
 };
 use cumulus_primitives_core::ParaId;
 use hex_literal::hex;
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sc_service::ChainType;
 use serde::{Deserialize, Serialize};
-use sp_core::{sr25519, Pair, Public, H160, H256};
+use sp_core::{ecdsa, sr25519, Pair, Public, H160, H256};
 use sp_runtime::traits::{IdentifyAccount, Verify};
 
 /// Specialized `ChainSpec` for the normal parachain runtime.
@@ -16,6 +16,9 @@ pub type ChainSpec = sc_service::GenericChainSpec<avn_dev_runtime::GenesisConfig
 
 /// The default XCM version to set in genesis config.
 const SAFE_XCM_VERSION: u32 = xcm::prelude::XCM_VERSION;
+
+pub const COLLATOR_DEPOSIT: Balance = 2_000 * AVT;
+pub type EthPublicKey = ecdsa::Public;
 
 /// Helper function to generate a crypto pair from seed
 pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
@@ -110,6 +113,7 @@ pub fn development_config() -> ChainSpec {
 					get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
 				],
 				2000.into(),
+				ethereum_public_keys(),
 			)
 		},
 		Vec::new(),
@@ -159,6 +163,7 @@ pub fn local_testnet_config() -> ChainSpec {
 					get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
 				],
 				2000.into(),
+				ethereum_public_keys(),
 			)
 		},
 		// Bootnodes
@@ -183,6 +188,7 @@ fn testnet_genesis(
 	invulnerables: Vec<(AccountId, AuraId, AvnId)>,
 	endowed_accounts: Vec<AccountId>,
 	id: ParaId,
+	eth_public_keys: Vec<EthPublicKey>,
 ) -> avn_dev_runtime::GenesisConfig {
 	avn_dev_runtime::GenesisConfig {
 		system: avn_dev_runtime::SystemConfig {
@@ -195,12 +201,13 @@ fn testnet_genesis(
 		},
 		parachain_info: avn_dev_runtime::ParachainInfoConfig { parachain_id: id },
 		collator_selection: avn_dev_runtime::CollatorSelectionConfig {
-			invulnerables: invulnerables.iter().cloned().map(|(acc, _, _)| acc).collect(),
+			invulnerables: invulnerables.clone().iter().cloned().map(|(acc, _, _)| acc).collect(),
 			candidacy_bond: EXISTENTIAL_DEPOSIT * 16,
 			..Default::default()
 		},
 		session: avn_dev_runtime::SessionConfig {
 			keys: invulnerables
+				.clone()
 				.into_iter()
 				.map(|(acc, aura, avnk)| {
 					(
@@ -213,9 +220,28 @@ fn testnet_genesis(
 		},
 		// no need to pass anything to aura, in fact it will panic if we do. Session will take care
 		// of this.
+		validators_manager: ValidatorsManagerConfig {
+			validators: invulnerables
+				.clone()
+				.iter()
+				.map(|x| x.0.clone())
+				.zip(eth_public_keys.iter().map(|pk| pk.clone()))
+				.collect::<Vec<_>>(),
+		},
 		aura: Default::default(),
 		aura_ext: Default::default(),
 		parachain_system: Default::default(),
+		parachain_staking: ParachainStakingConfig {
+			candidates: invulnerables
+				.iter()
+				.cloned()
+				.map(|(acc, _, _)| (acc, COLLATOR_DEPOSIT))
+				.collect(),
+			nominations: vec![],
+			min_collator_stake: COLLATOR_DEPOSIT,
+			min_total_nominator_stake: 10 * AVT,
+			delay: 2,
+		},
 		polkadot_xcm: avn_dev_runtime::PolkadotXcmConfig {
 			safe_xcm_version: Some(SAFE_XCM_VERSION),
 		},
@@ -234,4 +260,33 @@ fn testnet_genesis(
 			voting_period: VOTING_PERIOD,
 		},
 	}
+}
+
+fn ethereum_public_keys() -> Vec<EthPublicKey> {
+	return vec![
+		ecdsa::Public::from_full(&hex![
+			"03471b4c1012dddf4d494c506a098c7b1b719b20bbb177b1174f2166f953c29503"
+		])
+		.unwrap(),
+		ecdsa::Public::from_full(&hex![
+			"0292a73ad9488b934fd04cb31a0f50634841f7105a5b4a8538e4bfa06aa477bed6"
+		])
+		.unwrap(),
+		ecdsa::Public::from_full(&hex![
+			"03c5527886d8e09ad1fededd3231f890685d2d5345385d54181269f80c8926ff8e"
+		])
+		.unwrap(),
+		ecdsa::Public::from_full(&hex![
+			"020e7593c534411f6f0e2fb91340751ada34ee5986f70b300443be17844416b28b"
+		])
+		.unwrap(),
+		ecdsa::Public::from_full(&hex![
+			"02fde5665a2cb42863fb312fb527f2b02110997fc6865df583ca4324be137b7894"
+		])
+		.unwrap(),
+		ecdsa::Public::from_full(&hex![
+			"031f8860a4f05ec62077a97d37af60f0229b775b98946efcb92998522abefc1b6c"
+		])
+		.unwrap(),
+	]
 }

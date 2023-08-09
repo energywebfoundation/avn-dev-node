@@ -13,7 +13,7 @@ pub mod constants;
 use constants::{currency::*, time::*};
 
 mod emulations;
-use emulations::CandidateTransactionSubmitterEmulation;
+use emulations::{CandidateTransactionSubmitterEmulation, ProcessedEventsCheckerEmulation};
 
 mod proxy_config;
 use proxy_config::AvnProxyConfig;
@@ -421,6 +421,38 @@ impl pallet_aura::Config for Runtime {
 }
 
 parameter_types! {
+	// The accountId that will hold the reward for the staking pallet
+	pub const RewardPotId: PalletId = PalletId(*b"av/vamgr");
+}
+impl pallet_parachain_staking::Config for Runtime {
+	type RuntimeCall = RuntimeCall;
+	type RuntimeEvent = RuntimeEvent;
+	type Currency = Balances;
+	/// Minimum era length is 4 minutes (20 * 12 second block times)
+	type MinBlocksPerEra = ConstU32<20>;
+	/// Eras before the reward is paid
+	type RewardPaymentDelay = ConstU32<2>;
+	/// Minimum collators selected per era, default at genesis and minimum forever after
+	type MinSelectedCandidates = ConstU32<20>;
+	/// Maximum top nominations per candidate
+	type MaxTopNominationsPerCandidate = ConstU32<300>;
+	/// Maximum bottom nominations per candidate
+	type MaxBottomNominationsPerCandidate = ConstU32<50>;
+	/// Maximum nominations per nominator
+	type MaxNominationsPerNominator = ConstU32<100>;
+	/// Minimum stake required to be reserved to be a nominator
+	type MinNominationPerCollator = ConstU128<1>;
+	type RewardPotId = RewardPotId;
+	type ErasPerGrowthPeriod = ConstU32<30>; // 30 eras (~ 1 month if era = 1 day)
+	type ProcessedEventsChecker = ProcessedEventsCheckerEmulation;
+	type Public = <Signature as sp_runtime::traits::Verify>::Signer;
+	type Signature = Signature;
+	type CollatorSessionRegistration = Session;
+	type CollatorPayoutDustHandler = TokenManager;
+	type WeightInfo = pallet_parachain_staking::weights::SubstrateWeight<Runtime>;
+}
+
+parameter_types! {
 	pub const PotId: PalletId = PalletId(*b"PotStake");
 	pub const MaxCandidates: u32 = 1000;
 	pub const MinCandidates: u32 = 5;
@@ -566,6 +598,20 @@ impl pallet_avn_proxy::Config for Runtime {
 	type WeightInfo = pallet_avn_proxy::default_weights::SubstrateWeight<Runtime>;
 }
 
+parameter_types! {
+	pub const ValidatorManagerVotingPeriod: BlockNumber = 30 * MINUTES;
+}
+
+impl pallet_validators_manager::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type ProcessedEventsChecker = ProcessedEventsCheckerEmulation;
+	type VotingPeriod = ValidatorManagerVotingPeriod;
+	type CandidateTransactionSubmitter = CandidateTransactionSubmitterEmulation;
+	type AccountToBytesConvert = Avn;
+	type ValidatorRegistrationNotifier = ();
+	type ReportValidatorOffence = ();
+	type WeightInfo = pallet_validators_manager::default_weights::SubstrateWeight<Runtime>;
+}
 // // Other pallets
 
 /// Configure the pallet template in pallets/template.
@@ -598,6 +644,10 @@ construct_runtime!(
 		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>} = 22,
 		Aura: pallet_aura::{Pallet, Storage, Config<T>} = 23,
 		AuraExt: cumulus_pallet_aura_ext::{Pallet, Storage, Config} = 24,
+		ParachainStaking: pallet_parachain_staking::{Pallet, Call, Storage, Event<T>, Config<T>} = 96,
+
+		// Since the ValidatorsManager integrates with the ParachainStaking pallet, we want to initialise after it.
+		ValidatorsManager: pallet_validators_manager = 18,
 
 		// XCM helpers.
 		XcmpQueue: cumulus_pallet_xcmp_queue::{Pallet, Call, Storage, Event<T>} = 30,

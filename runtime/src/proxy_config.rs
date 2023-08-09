@@ -72,6 +72,54 @@ impl ProvableProxy<RuntimeCall, Signature, AccountId> for AvnProxyConfig {
 				proof,
 				batch_id: _,
 			}) => return Some(proof.clone()),
+			RuntimeCall::ParachainStaking(
+				pallet_parachain_staking::Call::signed_candidate_bond_extra {
+					proof,
+					extra_amount: _,
+				},
+			) => return Some(proof.clone()),
+			RuntimeCall::ParachainStaking(
+				pallet_parachain_staking::Call::signed_execute_candidate_unbond {
+					proof,
+					candidate: _,
+				},
+			) => return Some(proof.clone()),
+			RuntimeCall::ParachainStaking(
+				pallet_parachain_staking::Call::signed_schedule_candidate_unbond { proof, less: _ },
+			) => return Some(proof.clone()),
+			RuntimeCall::ParachainStaking(pallet_parachain_staking::Call::signed_nominate {
+				proof,
+				targets: _,
+				amount: _,
+			}) => return Some(proof.clone()),
+			RuntimeCall::ParachainStaking(
+				pallet_parachain_staking::Call::signed_schedule_leave_nominators { proof },
+			) => return Some(proof.clone()),
+			RuntimeCall::ParachainStaking(
+				pallet_parachain_staking::Call::signed_execute_leave_nominators {
+					proof,
+					nominator: _,
+				},
+			) => return Some(proof.clone()),
+			RuntimeCall::ParachainStaking(
+				pallet_parachain_staking::Call::signed_schedule_revoke_nomination {
+					proof,
+					collator: _,
+				},
+			) => return Some(proof.clone()),
+			RuntimeCall::ParachainStaking(pallet_parachain_staking::Call::signed_bond_extra {
+				proof,
+				extra_amount: _,
+			}) => return Some(proof.clone()),
+			RuntimeCall::ParachainStaking(
+				pallet_parachain_staking::Call::signed_schedule_nominator_unbond { proof, less: _ },
+			) => return Some(proof.clone()),
+			RuntimeCall::ParachainStaking(
+				pallet_parachain_staking::Call::signed_execute_nomination_request {
+					proof,
+					nominator: _,
+				},
+			) => return Some(proof.clone()),
 			_ => None,
 		}
 	}
