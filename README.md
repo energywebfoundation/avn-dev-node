@@ -84,3 +84,14 @@ target/release/avn-dev-node --dev -- --chain rococo-local
 After starting the node, you will notice that no blocks are generated. This is because a parachain needs to be onboarded to a relay chain that it is configured with. Substrate provides useful tutorials on how to set up an environment with a relay chain, which is highly recommended to complete. You can find these tutorials [here](https://docs.substrate.io/tutorials/build-a-parachain/).
 
 To expedite the process of local development for this project, we recommend following the [local setup guide](parachain-launch/README.md) to orchestrate a full local network.
+
+
+## Updating the pallet-ewx-worker-solution Dependency
+
+If you're using a cargo dependency from GitHub and its reference has been updated, Cargo won't automatically detect the change if there's a cached reference on your local system. To ensure your project uses the updated reference, especially when working with branches during development or relying on the latest main branch, you can use the following command:
+
+```bash
+cargo update -p pallet-ewx-worker-solution
+```
+
+This command forces your project to update its references to the pallet, ensuring you're using the latest version.

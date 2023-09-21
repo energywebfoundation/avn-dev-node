@@ -189,7 +189,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	spec_name: create_runtime_str!("avn-dev-runtime"),
 	impl_name: create_runtime_str!("avn-dev-runtime"),
 	authoring_version: 1,
-	spec_version: 1,
+	spec_version: 2,
 	impl_version: 0,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 1,
@@ -615,6 +615,12 @@ impl pallet_validators_manager::Config for Runtime {
 // // Other pallets
 
 /// Configure the pallet template in pallets/template.
+impl pallet_ewx_worker_solution::Config for Runtime {
+       type RuntimeEvent = RuntimeEvent;
+	   type DepositCurrency = Balances;
+}
+
+/// Configure the pallet template in pallets/template.
 impl pallet_template::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 }
@@ -657,6 +663,9 @@ construct_runtime!(
 
 		// Template
 		TemplatePallet: pallet_template::{Pallet, Call, Storage, Event<T>}  = 40,
+
+		// EW
+		WorkerNodePallet: pallet_ewx_worker_solution = 50,
 
 		// Substrate pallets
 		Assets: pallet_assets = 60,

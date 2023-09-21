@@ -441,6 +441,7 @@ dependencies = [
  "pallet-balances",
  "pallet-collator-selection",
  "pallet-ethereum-transactions",
+ "pallet-ewx-worker-solution",
  "pallet-nft-manager",
  "pallet-parachain-staking",
  "pallet-session",
@@ -5431,6 +5432,23 @@ dependencies = [
  "sp-avn-common",
  "sp-core",
  "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-ewx-worker-solution"
+version = "0.1.0"
+source = "git+ssh://git@github.com/energywebfoundation/ewx-worker-solution-pallet.git?branch=main#aea6598eff00e57a42ed1fae18e8331fa9bbd17b"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "node-primitives",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core",
  "sp-runtime",
  "sp-std",
 ]

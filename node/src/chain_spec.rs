@@ -199,6 +199,7 @@ fn testnet_genesis(
 		balances: avn_dev_runtime::BalancesConfig {
 			balances: endowed_accounts.iter().cloned().map(|k| (k, ENDOWMENT_AMOUNT)).collect(),
 		},
+		worker_node_pallet: Default::default(),
 		parachain_info: avn_dev_runtime::ParachainInfoConfig { parachain_id: id },
 		collator_selection: avn_dev_runtime::CollatorSelectionConfig {
 			invulnerables: invulnerables.clone().iter().cloned().map(|(acc, _, _)| acc).collect(),
