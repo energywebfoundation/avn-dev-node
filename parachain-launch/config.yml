@@ -8,7 +8,7 @@ relaychain:
         validation_upgrade_cooldown: 5
         validation_upgrade_delay: 5
   overrides: # additonal runtime override
-    session_length_in_blocks: 50
+    session_length_in_blocks: 10
   env: # environment variables for all relaychain nodes
     RUST_LOG: parachain::candidate-backing=trace
   flags: # additional CLI flags for all relaychain nodes
