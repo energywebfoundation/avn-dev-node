@@ -135,3 +135,37 @@ cargo update -p pallet-ewx-worker-solution
 ```
 
 This command forces your project to update its references to the pallet, ensuring you're using the latest version.
+
+## Using Worker pallet in polkadot.js UI
+
+After you launched relay chain and parachain as it is described in parachain-launch/README.md you can interact with pallet on `https://polkadot.js.org/`. By default polkadot.js is connected to Polkadot mainnet, so you need to switch to parachain. For this click on the chain drop-down list in up right conner and select `DEVELOPMENT` sublist. If this list is missing `ws:127.0.0.1:9947` node, then you need to add it in `custom endpoint` field.
+Extrinsics can be send from `Developer/extrinsic` menu. Extrinsics of Worker pallet are available in `workerNodePallet`. Before sending extrinsic choose one of the development accounts.
+
+### Signing up solution registrar
+
+- choose `signupSolutionRegistrar` extrinsic
+- specify extrinsic parameters:
+  - `friendly name`: `registrar name`,
+  - `legalLocation`: `registrar location`
+- click `Submit Transaction` and in next pop-up click `Sign and Submit`
+- go to Network-Explorer and make sure that there is `workerNodePallet.NewSolutionRegistrarSignup` in the list of recent events
+
+### Signing up solution registrar
+
+- select same account which was used to signup solution registrar
+- choose `registerSolution` extrinsic
+- specify extrinsic parameters:
+  - `namespace`: `solution namespace`
+  - `name`: `solution name`
+  - `description`: `solution description`
+  - `publisherInfo`: `solution publisher info`
+  - `logoUrl`: `solution logo url` // it is optional
+  - `workLogic`: `work logic`
+  - `expirationBlock`: `10000`
+  - `maxWaitingThreshhold`: `60`
+  - `voteThresholdPercent`: `60`
+- click `Submit Transaction` and in next pop-up click `Sign and Submit`
+- go to Network-Explorer and make sure that there is
+`workerNodePallet.SolutionCreated` in the list of recent events
+
+
