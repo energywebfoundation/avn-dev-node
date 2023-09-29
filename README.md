@@ -150,7 +150,7 @@ Extrinsics can be send from `Developer/extrinsic` menu. Extrinsics of Worker pal
 - click `Submit Transaction` and in next pop-up click `Sign and Submit`
 - go to Network-Explorer and make sure that there is `workerNodePallet.NewSolutionRegistrarSignup` in the list of recent events
 
-### Signing up solution registrar
+### Registering a solution
 
 - select same account which was used to signup solution registrar
 - choose `registerSolution` extrinsic
@@ -168,4 +168,42 @@ Extrinsics can be send from `Developer/extrinsic` menu. Extrinsics of Worker pal
 - go to Network-Explorer and make sure that there is
 `workerNodePallet.SolutionCreated` in the list of recent events
 
+## Using Worker pallet from JS/TS
 
+### Intallation
+
+The polkadot.js library can be installed uing the instructions here: https://polkadot.js.org/docs/api/start/install/ .
+
+Use of Typescript may require additional libraries such as `@polkadot/typegen`. See https://polkadot.js.org/docs/api/start/typescript.user.
+
+### State Queries
+
+Pallet state queries can be done via the `.query` API, as shown [here](https://polkadot.js.org/docs/api/start/api.query)
+
+## Example scenarios
+
+### Solution Registrar Flow
+
+1. Follow the instructions to [register as a solution registrar via Polkadot.js](#signing-up-solution-registrar) 
+
+2. Use the follow script as an example to query the Solution Registrar info.
+Replace the `ALICE` var with whichever account was used to register. 
+
+```TS
+// Import
+import { ApiPromise, WsProvider } from "@polkadot/api"
+
+async function main(): Promise<void> {
+  const wsProvider = new WsProvider("ws://localhost:9947")
+  const api = await ApiPromise.create({ provider: wsProvider })
+
+  const ALICE = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
+  const account = await api.query.system.account(ALICE)
+  console.log((account as any).data.toHuman())
+
+  const result = await api.query.workerNodePallet.registrarInventory(ALICE)
+  console.log(result.toHuman())
+}
+
+main()
+```
