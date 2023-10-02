@@ -161,6 +161,7 @@ Extrinsics can be send from `Developer/extrinsic` menu. Extrinsics of Worker pal
   - `publisherInfo`: `solution publisher info`
   - `logoUrl`: `solution logo url` // it is optional
   - `workLogic`: `work logic`
+  - `executionEnvironment`: `10`
   - `expirationBlock`: `10000`
   - `maxWaitingThreshhold`: `60`
   - `voteThresholdPercent`: `60`
@@ -170,9 +171,9 @@ Extrinsics can be send from `Developer/extrinsic` menu. Extrinsics of Worker pal
 
 ## Using Worker pallet from JS/TS
 
-### Intallation
+### Installation
 
-The polkadot.js library can be installed uing the instructions here: https://polkadot.js.org/docs/api/start/install/ .
+The polkadot.js library can be installed using the instructions here: https://polkadot.js.org/docs/api/start/install/ .
 
 Use of Typescript may require additional libraries such as `@polkadot/typegen`. See https://polkadot.js.org/docs/api/start/typescript.user.
 
@@ -184,26 +185,85 @@ Pallet state queries can be done via the `.query` API, as shown [here](https://p
 
 ### Solution Registrar Flow
 
-1. Follow the instructions to [register as a solution registrar via Polkadot.js](#signing-up-solution-registrar) 
+1. Follow the instructions to [register as a solution registrar via Polkadot.js](#signing-up-solution-registrar)
 
-2. Use the follow script as an example to query the Solution Registrar info.
-Replace the `ALICE` var with whichever account was used to register. 
+2. Use the follow script as an example to register solution.
+`ALICE` is one of the predefined development accounts. This script first
+signups ALICE as solution registrar, which allows next to register solution.
 
 ```TS
-// Import
-import { ApiPromise, WsProvider } from "@polkadot/api"
+import { ApiPromise, WsProvider, Keyring } from "@polkadot/api";
+import { blake2AsHex } from "@polkadot/util-crypto";
 
 async function main(): Promise<void> {
-  const wsProvider = new WsProvider("ws://localhost:9947")
-  const api = await ApiPromise.create({ provider: wsProvider })
+  const wsProvider = new WsProvider("ws://localhost:9947");
+  const api = await ApiPromise.create({ provider: wsProvider });
 
-  const ALICE = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
-  const account = await api.query.system.account(ALICE)
-  console.log((account as any).data.toHuman())
+  const keyring = new Keyring({ type: "sr25519" });
+  const ALICE_KEYRING = keyring.addFromUri("//Alice", {
+    name: "Alice default",
+  });
+  const ALICE_ADDRESS = ALICE_KEYRING.address; // "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
 
-  const result = await api.query.workerNodePallet.registrarInventory(ALICE)
-  console.log(result.toHuman())
+  const registrar_name = "Alice";
+  const registrar_legal_location = "Alice place";
+  await new Promise<void>(async (resolve) => {
+    let unsub = await api.tx.workerNodePallet
+      .signupSolutionRegistrar(registrar_name, registrar_legal_location)
+      .signAndSend(ALICE_KEYRING, ({ status }) => {
+        if (status.isFinalized) {
+          unsub();
+          resolve();
+        }
+      });
+  });
+  const aliceRegistrarInfo =
+    await api.query.workerNodePallet.registrarInventory(ALICE_ADDRESS);
+  console.log(aliceRegistrarInfo.toHuman());
+
+  const namespace = "solution namespace";
+  const name = "solution name";
+  const description = "solution description";
+  const publisherInfo = "solution publisher info";
+  const logoUrl = "solution logo url";
+  const workLogicCid = "solution work logic cid";
+  const executionEnvironment = 10; // NodeRedV1
+  const expirationBlock = 100000;
+  const maxWaitingThreshold = 60;
+  const voteThresholdPercent = 60;
+
+  await new Promise<void>(async (resolve) => {
+    let unsub = await api.tx.workerNodePallet
+      .registerSolution(
+        namespace,
+        name,
+        description,
+        publisherInfo,
+        logoUrl,
+        workLogicCid,
+        executionEnvironment,
+        expirationBlock,
+        maxWaitingThreshold,
+        voteThresholdPercent,
+      )
+      .signAndSend(ALICE_KEYRING, ({ status }) => {
+        if (status.isFinalized) {
+          unsub();
+          resolve();
+        }
+      });
+  });
+  const activeSolution =
+    await api.query.workerNodePallet.registrarActiveSolutionRegistry(
+      ALICE_ADDRESS,
+      namespace,
+    );
+  console.log(activeSolution.toHuman()); // null - indicator of existing account-namespace pair
+
+  const solution = await api.query.workerNodePallet.solutions(
+    blake2AsHex(namespace),
+  );
+  console.log(solution.toHuman());
 }
 
-main()
-```
+main();
