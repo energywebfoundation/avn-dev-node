@@ -8,11 +8,25 @@ This setup uses [parachain-launch](https://github.com/open-web3-stack/parachain-
 
 ## Generation
 
-Follow the project instructions in the [README](../README.md/#building-the-client) to build a release version of the node and a Docker image with the tag `avn-dev-node:latest`.
+Follow the project instructions in the [README](../README.md/#building-the-client) to build a release version of the node and a Docker image with the tag aventus/`avn-dev-node:latest`.
 
 Then, run the following command:
 ```sh
 parachain-launch generate --output parachain-launch/output parachain-launch/config.yml -y
+
+Note: If this command fails with message
+
+```
+Error parsing spec file: unknown field `session_length_in_blocks`
+```
+, then try to comment
+
+```
+  overrides: # additonal runtime override
+    session_length_in_blocks: 10
+
+```
+in the `parachain-launch/config.yml`
 ```
 This will generate Docker files in a folder called `output` within your current working directory or in the directory provided to the `--output` option.
 

@@ -135,3 +135,127 @@ cargo update -p pallet-ewx-worker-solution
 ```
 
 This command forces your project to update its references to the pallet, ensuring you're using the latest version.
+
+## Using Worker pallet in polkadot.js UI
+
+After you launched relay chain and parachain as it is described in parachain-launch/README.md you can interact with pallet on `https://polkadot.js.org/`. By default polkadot.js is connected to Polkadot mainnet, so you need to switch to parachain. For this click on the chain drop-down list in up right conner and select `DEVELOPMENT` sublist. If this list is missing `ws:127.0.0.1:9947` node, then you need to add it in `custom endpoint` field.
+Extrinsics can be send from `Developer/extrinsic` menu. Extrinsics of Worker pallet are available in `workerNodePallet`. Before sending extrinsic choose one of the development accounts.
+
+### Signing up solution registrar
+
+- choose `signupSolutionRegistrar` extrinsic
+- specify extrinsic parameters:
+  - `friendly name`: `registrar name`,
+  - `legalLocation`: `registrar location`
+- click `Submit Transaction` and in next pop-up click `Sign and Submit`
+- go to Network-Explorer and make sure that there is `workerNodePallet.NewSolutionRegistrarSignup` in the list of recent events
+
+### Registering a solution
+
+- select same account which was used to signup solution registrar
+- choose `registerSolution` extrinsic
+- specify extrinsic parameters:
+  - `namespace`: `solution namespace`
+  - `name`: `solution name`
+  - `description`: `solution description`
+  - `publisherInfo`: `solution publisher info`
+  - `logoUrl`: `solution logo url` // it is optional
+  - `workLogic`: `work logic`
+  - `executionEnvironment`: `10`
+  - `expirationBlock`: `10000`
+  - `maxWaitingThreshhold`: `60`
+  - `voteThresholdPercent`: `60`
+- click `Submit Transaction` and in next pop-up click `Sign and Submit`
+- go to Network-Explorer and make sure that there is
+`workerNodePallet.SolutionCreated` in the list of recent events
+
+## Using Worker pallet from JS/TS
+
+### Installation
+
+The polkadot.js library can be installed using the instructions here: https://polkadot.js.org/docs/api/start/install/ .
+
+Use of Typescript may require additional libraries such as `@polkadot/typegen`. See https://polkadot.js.org/docs/api/start/typescript.user.
+
+### State Queries
+
+Pallet state queries can be done via the `.query` API, as shown [here](https://polkadot.js.org/docs/api/start/api.query)
+
+## Example scenarios
+
+### Solution Registrar Flow
+
+Use the follow script as an example to register solution.
+`ALICE` is one of the predefined development accounts. This script first
+signups ALICE as solution registrar, which allows next to register solution.
+
+```TS
+import { ApiPromise, WsProvider, Keyring } from "@polkadot/api";
+import { blake2AsHex } from "@polkadot/util-crypto";
+
+async function main(): Promise<void> {
+  const wsProvider = new WsProvider("ws://localhost:9947");
+  const api = await ApiPromise.create({ provider: wsProvider });
+
+  const keyring = new Keyring({ type: "sr25519" });
+  const ALICE_KEYRING = keyring.addFromUri("//Alice", {
+    name: "Alice default",
+  });
+  const ALICE_ADDRESS = ALICE_KEYRING.address; // "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
+
+  const registrar_name = "Alice";
+  const registrar_legal_location = "Alice place";
+  await new Promise<void>(async (resolve) => {
+    let unsubscribe= await api.tx.workerNodePallet
+      .signupSolutionRegistrar(registrar_name, registrar_legal_location)
+      .signAndSend(ALICE_KEYRING, ({ status }) => {
+        if (status.isFinalized) {
+          unsubscribe();
+          resolve();
+        }
+      });
+  });
+  const aliceRegistrarInfo =
+    await api.query.workerNodePallet.registrarInventory(ALICE_ADDRESS);
+  console.log(aliceRegistrarInfo.toHuman());
+
+  const namespace = "solution namespace";
+  const name = "solution name";
+  const description = "solution description";
+  const publisherInfo = "solution publisher info";
+  const logoUrl = "solution logo url";
+  const workLogicCid = "solution work logic cid";
+  const executionEnvironment = 10; // NodeRedV1
+  const expirationBlock = 100000;
+  const maxWaitingThreshold = 60;
+  const voteThresholdPercent = 60;
+
+  await new Promise<void>(async (resolve) => {
+    let unsubscribe = await api.tx.workerNodePallet
+      .registerSolution(
+        namespace,
+        name,
+        description,
+        publisherInfo,
+        logoUrl,
+        workLogicCid,
+        executionEnvironment,
+        expirationBlock,
+        maxWaitingThreshold,
+        voteThresholdPercent,
+      )
+      .signAndSend(ALICE_KEYRING, ({ status }) => {
+        if (status.isFinalized) {
+          unsubscribe();
+          resolve();
+        }
+      });
+  });
+
+  const solution = await api.query.workerNodePallet.solutions(
+    blake2AsHex(namespace),
+  );
+  console.log(solution.toHuman());
+}
+
+main();
