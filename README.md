@@ -185,9 +185,7 @@ Pallet state queries can be done via the `.query` API, as shown [here](https://p
 
 ### Solution Registrar Flow
 
-1. Follow the instructions to [register as a solution registrar via Polkadot.js](#signing-up-solution-registrar)
-
-2. Use the follow script as an example to register solution.
+Use the follow script as an example to register solution.
 `ALICE` is one of the predefined development accounts. This script first
 signups ALICE as solution registrar, which allows next to register solution.
 
