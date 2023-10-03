@@ -253,12 +253,6 @@ async function main(): Promise<void> {
         }
       });
   });
-  const activeSolution =
-    await api.query.workerNodePallet.registrarActiveSolutionRegistry(
-      ALICE_ADDRESS,
-      namespace,
-    );
-  console.log(activeSolution.toHuman()); // null - indicator of existing account-namespace pair
 
   const solution = await api.query.workerNodePallet.solutions(
     blake2AsHex(namespace),
