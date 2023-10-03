@@ -206,11 +206,11 @@ async function main(): Promise<void> {
   const registrar_name = "Alice";
   const registrar_legal_location = "Alice place";
   await new Promise<void>(async (resolve) => {
-    let unsub = await api.tx.workerNodePallet
+    let unsubscribe= await api.tx.workerNodePallet
       .signupSolutionRegistrar(registrar_name, registrar_legal_location)
       .signAndSend(ALICE_KEYRING, ({ status }) => {
         if (status.isFinalized) {
-          unsub();
+          unsubscribe();
           resolve();
         }
       });
@@ -231,7 +231,7 @@ async function main(): Promise<void> {
   const voteThresholdPercent = 60;
 
   await new Promise<void>(async (resolve) => {
-    let unsub = await api.tx.workerNodePallet
+    let unsubscribe = await api.tx.workerNodePallet
       .registerSolution(
         namespace,
         name,
@@ -246,7 +246,7 @@ async function main(): Promise<void> {
       )
       .signAndSend(ALICE_KEYRING, ({ status }) => {
         if (status.isFinalized) {
-          unsub();
+          unsubscribe();
           resolve();
         }
       });
