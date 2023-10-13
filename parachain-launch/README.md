@@ -32,7 +32,7 @@ docker compose up -d --build
 
 The parachain is automatically onboarded to the relay chain and you can interact with both chains using the following URLs:
 - [ws://localhost:9944](https://polkadot.js.org/apps/?rpc=ws%3A%2F%2Flocalhost%3A9944#/parachains) to interact with the relay chain
-- [ws://localhost:9947](https://polkadot.js.org/apps/?rpc=ws%3A%2F%2Flocalhost%3A9944#/accounts) to interact with the parachain
+- [ws://localhost:9947](https://polkadot.js.org/apps/?rpc=ws%3A%2F%2Flocalhost%3A9947#/accounts) to interact with the parachain
 
 
 ## Additional Docker Commands
