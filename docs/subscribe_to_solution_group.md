@@ -12,7 +12,8 @@ async function main(): Promise<void> {
   });
 
   const solution_group_namespace = "solution namespace";
-  const stake = 300 // in solution_group_operators_config.staking_amounts
+  // This amount will be reserved from free balance. The amount is in units. One unit = 1 AVT/(10^18)
+  const stake = 2 * (10^18) // should be in solution_group_operators_config.staking_amounts range
 
 
   await new Promise<void>(async (resolve) => {

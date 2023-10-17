@@ -12,6 +12,7 @@ async function main() {
   });
   const REGISTRAR_ADDRESS = REGISTRAR_KEYRING.address; // "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
 
+  // Free operator balance should be no less than registrar signup deposit. Signup deposit amount of the free balance will be frozen
   const registrar_name = "Alice registrar";
   const registrar_legal_location = "Alice registrar place";
   await new Promise<void>(async (resolve) => {

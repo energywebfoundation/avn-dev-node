@@ -11,20 +11,21 @@ async function main(): Promise<void> {
     name: "Alice registrar keyring",
   });
 
-  const namespace = "solution namespace";
+  const namespace = "solution group namespace";
   const solution_group_info = {
-    name: "solution name",
-    description: "solution description",
-    publisherInfo: "solution publisher info",
+    name: "solution group name",
+    description: "solution group description",
+    publisherInfo: "solution group publisher info",
   }
   const solution_group_operators_config = {
     start_block: 2000,
     max_operator_workers: 10,
     allowed_operators: 5,
-    staking_amounts: { min: 100, max: 500 },
+    // amounts are in units which are 10^(-18) part of 1 AVT
+    staking_amounts: { min: 1 * (10 ^ 18), max: 3 * (10 ^ 18) },
   }
   const solution_group_reward_config = {
-    subscription_reward_amount: 1000,
+    subscription_reward_amount: 0.01 * 10 ^ 18,
     minimum_participation_time: 100,
     active_participation_amount: 0,
     top_performance_bonus: 0,
@@ -32,6 +33,7 @@ async function main(): Promise<void> {
   const operation_start_block = 20
   const operation_end_block = 200
 
+  // Registering of solution group reserves part of the free balance. The amount of the reserved funds can be queried as `registrarDeposit()`
   await new Promise<void>(async (resolve) => {
     let unsub = await api.tx.workerNodePallet
       .solutionGroupRegistration(

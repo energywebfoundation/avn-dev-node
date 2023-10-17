@@ -616,8 +616,8 @@ impl pallet_validators_manager::Config for Runtime {
 
 /// Configure the pallet template in pallets/template.
 impl pallet_ewx_worker_solution::Config for Runtime {
-       type RuntimeEvent = RuntimeEvent;
-	   type DepositCurrency = Balances;
+	type RuntimeEvent = RuntimeEvent;
+	type DepositCurrency = Balances;
 }
 
 /// Configure the pallet template in pallets/template.

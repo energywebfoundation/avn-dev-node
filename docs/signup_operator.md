@@ -14,6 +14,9 @@ async function main() {
 
   const operator_name = "Operator Bob";
   const operator_legal_location = "Operator legal location";
+
+  // On subscribing operator deposits part of his free balance. The deposited amount can be queried as `workerNodeOperatorDeposit()`
+  // The deposited amount becomes frozen part of the balance
   await new Promise<void>(async (resolve) => {
     let unsub = await api.tx.workerNodePallet
       .signupWorkerNodeOperator(operator_name, operator_legal_location)
