@@ -189,7 +189,7 @@ Use the follow script as an example to register solution.
 `ALICE` is one of the predefined development accounts. This script first
 signups ALICE as solution registrar, which allows next to register solution.
 
-```TS
+```javascript
 import { ApiPromise, WsProvider, Keyring } from "@polkadot/api";
 import { blake2AsHex } from "@polkadot/util-crypto";
 
@@ -259,3 +259,5 @@ async function main(): Promise<void> {
 }
 
 main();
+```
+Other examples are in docs/
