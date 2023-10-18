@@ -1,4 +1,4 @@
-```javascript
+```ts
 import { ApiPromise, WsProvider, Keyring } from "@polkadot/api";
 import { blake2AsHex } from "@polkadot/util-crypto";
 
