@@ -61,45 +61,6 @@ async function main(): Promise<void> {
   })
 
   await api.disconnect()
-
-  // TODO: add solution to group
-  // const logoUrl = "solution logo url";
-  // const workLogicCid = "solution work logic cid";
-  // const executionEnvironment = 10; // NodeRedV1
-  // const expirationBlock = 100000;
-  // const maxWaitingThreshold = 60;
-  // const voteThresholdPercent = 60;
-  // await new Promise<void>(async (resolve) => {
-  //   let unsub = await api.tx.workerNodePallet
-  //     .registerSolution(
-  //       namespace,
-  //       name,
-  //       description,
-  //       publisherInfo,
-  //       logoUrl,
-  //       workLogicCid,
-  //       executionEnvironment,
-  //       expirationBlock,
-  //       maxWaitingThreshold,
-  //       voteThresholdPercent,
-  //     )
-  //     .signAndSend(ALICE_KEYRING, ({ status }) => {
-  //       if (status.isFinalized) {
-  //         unsub();
-  //         resolve();
-  //       }
-  //     });
-  // });
-  // activeSolution =
-  //   await api.query.workerNodePallet.registrarActiveSolutionRegistry(
-  //     ALICE_ADDRESS,
-  //     namespace,
-  //   );
-  // console.log(activeSolution.toHuman());
-  // const solution = await api.query.workerNodePallet.solutions(
-  //   blake2AsHex(namespace),
-  // );
-  // console.log(solution.toHuman());
 }
 
 main();
