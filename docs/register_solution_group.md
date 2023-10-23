@@ -2,6 +2,8 @@
 import { ApiPromise, WsProvider, Keyring } from "@polkadot/api";
 import { blake2AsHex } from "@polkadot/util-crypto";
 
+const ONE_AVT = BigInt("1000000000000000000")
+
 async function main(): Promise<void> {
   const wsProvider = new WsProvider("ws://localhost:9947"); // wss://ewx-dev-parachain-aule-qb9wx41jvm.energyweb.org/ws
   const api = await ApiPromise.create({ provider: wsProvider });
@@ -21,11 +23,11 @@ async function main(): Promise<void> {
     start_block: 2000,
     max_operator_workers: 10,
     allowed_operators: 5,
-    // amounts are in units which are 10^(-18) part of 1 AVT
-    staking_amounts: { min: 1 * (10 ^ 18), max: 3 * (10 ^ 18) },
+    // amounts are in units which are 10**(-18) part of 1 AVT
+    staking_amounts: { min: BigInt(1) * ONE_AVT, max: BigInt(3) * ONE_AVT },
   }
   const solution_group_reward_config = {
-    subscription_reward_amount: 0.01 * 10 ^ 18,
+    subscription_reward_amount: ONE_AVT/BigInt(100),
     minimum_participation_time: 100,
     active_participation_amount: 0,
     top_performance_bonus: 0,

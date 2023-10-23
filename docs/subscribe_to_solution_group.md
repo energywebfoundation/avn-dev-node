@@ -2,6 +2,8 @@
 import { ApiPromise, WsProvider, Keyring } from "@polkadot/api";
 import { blake2AsHex } from "@polkadot/util-crypto";
 
+const ONE_AVT = BigInt("1000000000000000000")
+
 async function main(): Promise<void> {
   const wsProvider = new WsProvider("ws://localhost:9947"); wss://ewx-dev-parachain-aule-qb9wx41jvm.energyweb.org/ws
   const api = await ApiPromise.create({ provider: wsProvider });
@@ -11,9 +13,9 @@ async function main(): Promise<void> {
     name: "Operator Bob",
   });
 
-  const solution_group_namespace = "solution namespace";
-  // This amount will be reserved from free balance. The amount is in units. One unit = 1 AVT/(10^18)
-  const stake = 2 * (10^18) // should be in solution_group_operators_config.staking_amounts range
+  const solution_group_namespace = "solution group namespace";
+  // This amount will be reserved from free balance. The amount is in units. One unit = 1 AVT/(10**18)
+  const stake = BigInt(2) * ONE_AVT // should be in solution_group_operators_config.staking_amounts range
 
 
   await new Promise<void>(async (resolve) => {
