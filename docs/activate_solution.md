@@ -7,7 +7,7 @@ import { blake2AsHex } from "@polkadot/util-crypto";
 // * Paused = 0. Solution not yet ready for voting
 // * Active = 1. New voting can be started
 // * Ended = 2. No new voting can be started
-// New solution has pending status. To change status `set_activation_status` extrinsic should be used.
+// New solution has Paused status. To change status `set_activation_status` extrinsic should be used.
 
 async function main(): Promise<void> {
   const wsProvider = new WsProvider("ws://localhost:9947");
