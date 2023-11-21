@@ -6,12 +6,10 @@ import { blake2AsHex } from "@polkadot/util-crypto";
   // Register solution group and solution: refer to the associated docs
 
 	// Then Add solution to the solution group
-	const groupNamespaceHash = blake2AsHex(group_namespace);
-	const solutionNamespaceHash = blake2AsHex(solutionNamespace);
 
 	await new Promise<void>(async (resolve) => {
 		let unsub = await api.tx.workerNodePallet
-			.addSolutionToGroup(groupNamespaceHash, solutionNamespaceHash)
+			.addSolutionToGroup(group_namespace, solutionNamespace)
 			.signAndSend(REGISTRAR_KEYRING, ({ status }) => {
 				if (status.isFinalized) {
 					unsub();
@@ -19,6 +17,8 @@ import { blake2AsHex } from "@polkadot/util-crypto";
 				}
 			});
 	});
+
+	const solutionNamespaceHash = blake2AsHex(solutionNamespace);
 
 	const groupOfSolution = await api.query.workerNodePallet.groupOfSolution(
 		solutionNamespaceHash
