@@ -27,9 +27,8 @@ async function main(): Promise<void> {
     staking_amounts: { min: BigInt(1) * ONE_AVT, max: BigInt(3) * ONE_AVT },
   }
   const solution_group_reward_config = {
-    subscription_reward_amount: ONE_AVT/BigInt(100),
-    minimum_participation_time: 100,
-    active_participation_amount: 0,
+    subscription_reward_per_block: ONE_AVT/BigInt(100),
+    voting_reward_per_block: 0,
     top_performance_bonus: 0,
   }
   const operation_start_block = 20
