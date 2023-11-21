@@ -619,6 +619,8 @@ impl pallet_ewx_worker_solution::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type DepositCurrency = Balances;
 	type WeightInfo = pallet_ewx_worker_solution::weights::SubstrateWeight<Runtime>;
+	type Signature = sp_core::sr25519::Signature;
+	type PublicKey = sp_core::sr25519::Public;
 }
 
 /// Configure the pallet template in pallets/template.
