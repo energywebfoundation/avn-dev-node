@@ -9,7 +9,7 @@ import { blake2AsHex } from "@polkadot/util-crypto";
 
 	await new Promise<void>(async (resolve) => {
 		let unsub = await api.tx.workerNodePallet
-			.addSolutionToGroup(group_namespace, solutionNamespace)
+			.addSolutionToGroup(groupNamespace, solutionNamespace)
 			.signAndSend(REGISTRAR_KEYRING, ({ status }) => {
 				if (status.isFinalized) {
 					unsub();
@@ -25,6 +25,16 @@ import { blake2AsHex } from "@polkadot/util-crypto";
 	);
 
 	console.log(`Group of the Solution ${groupOfSolution}`);
+
+  // Get solutions of given group
+  let allSolutions = await api.query.workerNodePallet.solutions.entries();
+  let solutionsOfGroup = (await Promise.all(allSolutions.map(async ([namespace, s]) => {
+    // v0.5.0
+    // const group = await api.query.workerNodePallet.groupOfSolution(blake2AsHex(solutionNamespace));
+    const group = await api.query.workerNodePallet.groupOfSolution(namespace.toHuman()?.toString());
+    return { solution: s, group };
+  }))).filter((s) => s.group.toHuman() == groupNamespace);
+  console.log("solutions of group", solutionsOfGroup.map((s) => s.solution.toHuman()));
 
 	await api.disconnect();
 }
