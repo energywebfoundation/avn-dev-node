@@ -18,10 +18,11 @@ import { blake2AsHex } from "@polkadot/util-crypto";
 			});
 	});
 
-	const solutionNamespaceHash = blake2AsHex(solutionNamespace);
 
 	const groupOfSolution = await api.query.workerNodePallet.groupOfSolution(
-		solutionNamespaceHash
+    // v0.6.1
+    // blake2AsHex(solutionNamespace);
+		solutionNamespace
 	);
 
 	console.log(`Group of the Solution ${groupOfSolution}`);
@@ -29,7 +30,7 @@ import { blake2AsHex } from "@polkadot/util-crypto";
   // Get solutions of given group
   let allSolutions = await api.query.workerNodePallet.solutions.entries();
   let solutionsOfGroup = (await Promise.all(allSolutions.map(async ([namespace, s]) => {
-    // v0.5.0
+    // v0.6.1
     // const group = await api.query.workerNodePallet.groupOfSolution(blake2AsHex(solutionNamespace));
     const group = await api.query.workerNodePallet.groupOfSolution(namespace.toHuman()?.toString());
     return { solution: s, group };
