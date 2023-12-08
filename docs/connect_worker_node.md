@@ -3,7 +3,7 @@ import { ApiPromise, WsProvider, Keyring } from "@polkadot/api";
 import { blake2AsHex } from "@polkadot/util-crypto";
 
 async function main() {
-	const wsProvider = new WsProvider("ws://localhost:9947"); // wss://ewx-dev-parachain-aule-qb9wx41jvm.energyweb.org/ws
+  const wsProvider = new WsProvider("ws://localhost:9947"); // wss://ewx-dev-parachain-aule-qb9wx41jvm.energyweb.org/ws
   const api = await ApiPromise.create({ provider: wsProvider });
 
   const keyring = new Keyring({ type: "sr25519" });
@@ -16,8 +16,8 @@ async function main() {
   // The operator should be registered before being allowed to add a new worker
   // To register a new worker node operator: refer to the associated documentation (/docs/signup_operator.md)
 	// The previous step gives the OPERATOR_KEYRING value, required to connect the new worker node
-	
-	const WORKER_KEYRING = keyring.addFromUri("//Charlie", {
+
+  const WORKER_KEYRING = keyring.addFromUri("//Charlie", {
     name: "Worker node Charlie",
   });
 

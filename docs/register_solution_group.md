@@ -20,10 +20,11 @@ async function main(): Promise<void> {
     publisherInfo: "solution group publisher info",
   }
   const solution_group_operators_config = {
-    start_block: 2000,
+	// operation_start_block < start_block < operation_end_block
+    start_block: 100,
     max_operator_workers: 10,
     allowed_operators: 5,
-    // amounts are in units which are 10**(-18) part of 1 AVT
+    // amounts are in units which are 10**(-18) part of 1 AVT. min < max
     staking_amounts: { min: BigInt(1) * ONE_AVT, max: BigInt(3) * ONE_AVT },
   }
   const solution_group_reward_config = {
@@ -31,8 +32,8 @@ async function main(): Promise<void> {
     voting_reward_per_block: 0,
     top_performance_bonus: 0,
   }
-  const operation_start_block = 20
-  const operation_end_block = 200
+  const operation_start_block = 10
+  const operation_end_block = 1000
 
   // Registering of solution group reserves part of the free balance. The amount of the reserved funds can be queried as `registrarDeposit()`
   await new Promise<void>(async (resolve) => {

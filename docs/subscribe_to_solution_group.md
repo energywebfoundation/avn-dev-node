@@ -17,7 +17,6 @@ async function main(): Promise<void> {
   // This amount will be reserved from free balance. The amount is in units. One unit = 1 AVT/(10**18)
   const stake = BigInt(2) * ONE_AVT // should be in solution_group_operators_config.staking_amounts range
 
-
   await new Promise<void>(async (resolve) => {
     let unsub = await api.tx.workerNodePallet
       .subscribeToSolutionGroup(
