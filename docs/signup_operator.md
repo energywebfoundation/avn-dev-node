@@ -20,9 +20,16 @@ async function main() {
   await new Promise<void>(async (resolve) => {
     let unsub = await api.tx.workerNodePallet
       .signupWorkerNodeOperator(operator_name, operator_legal_location)
-      .signAndSend(OPERATOR_KEYRING, ({ status }) => {
-        console.log(status.toHuman());
-        if (status.isFinalized) {
+      .signAndSend(OPERATOR_KEYRING, ({ events }) => {
+        if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
+          console.log('Operator signed up');
+          unsub();
+          resolve();
+        } else if (events.some(({ event: { method, section } }) => "ExtrinsicFailed" === method && section === "system")) {
+          console.error('Failed to signup operator');
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+          });
           unsub();
           resolve();
         }

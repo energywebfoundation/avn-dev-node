@@ -21,9 +21,16 @@ async function main(): Promise<void> {
   await new Promise<void>(async (resolve) => {
     let unsub = await api.tx.workerNodePallet
       .signupWorkerNodeOperator(operator_name, operator_legal_location)
-      .signAndSend(OPERATOR_KEYRING, ({ status }) => {
-        console.log(status.toHuman());
-        if (status.isFinalized) {
+      .signAndSend(OPERATOR_KEYRING, ({ events }) => {
+        if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
+          console.log('Operator signed up');
+          unsub();
+          resolve();
+        } else if (events.some(({ event: { method, section } }) => "ExtrinsicFailed" === method && section === "system")) {
+          console.error('Failed to signup operator');
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+          });
           unsub();
           resolve();
         }
@@ -33,14 +40,21 @@ async function main(): Promise<void> {
     await api.query.workerNodePallet.workerNodeOperatorInventory(OPERATOR_ADDRESS);
   console.log(operatorAliceInfo.toHuman());
 
-  // Connect worker address 
+  // Connect worker address
   const workerAddress = "5GHtiduViydfQY5RhLu7gWbCTY8VeZeJ4aRt7czkqenyyz91"
   await new Promise<void>(async (resolve) => {
     let unsub = await api.tx.workerNodePallet
       .connectWorkerNode(workerAddress)
-      .signAndSend(OPERATOR_KEYRING, ({ status }) => {
-        console.log(status.toHuman());
-        if (status.isFinalized) {
+      .signAndSend(OPERATOR_KEYRING, ({ events }) => {
+        if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
+          console.log('Worker node connected');
+          unsub();
+          resolve();
+        } else if (events.some(({ event: { method, section } }) => "ExtrinsicFailed" === method && section === "system")) {
+          console.error('Failed to connect worker node');
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+          });
           unsub();
           resolve();
         }

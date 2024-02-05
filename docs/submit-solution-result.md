@@ -21,10 +21,18 @@ async function main(): Promise<void> {
   await new Promise<void>(async (resolve) => {
     // note the use of send instead of signAndSend
     // https://polkadot.js.org/docs/api/cookbook/tx/#how-do-i-send-an-unsigned-extrinsic
-    let unsub = await utx.send(({ status }) => {
-        if (status.isFinalized) {
-          unsub()
-          resolve()
+    let unsub = await utx.send(({ events }) => {
+        if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
+          console.log('Solution result submitted');
+          unsub();
+          resolve();
+        } else if (events.some(({ event: { method, section } }) => "ExtrinsicFailed" === method && section === "system")) {
+          console.error('Failed to submit solution result');
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+          });
+          unsub();
+          resolve();
         }
       })
   })

@@ -27,8 +27,16 @@ async function main() {
 	await new Promise<void>(async (resolve) => {
 		let unsub = await api.tx.workerNodePallet
 			.connectWorkerNode(WORKER_NODE_ADDRESS)
-			.signAndSend(OPERATOR_KEYRING, ({ status }) => {
-				if (status.isFinalized) {
+			.signAndSend(OPERATOR_KEYRING, ({ events }) => {
+				if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
+					console.log('Worker node connected');
+					unsub();
+					resolve();
+				} else if (events.some(({ event: { method, section } }) => "ExtrinsicFailed" === method && section === "system")) {
+					console.error('Failed to connect worker node');
+					events.forEach(({ phase, event: { data, method, section } }) => {
+						console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+					});
 					unsub();
 					resolve();
 				}

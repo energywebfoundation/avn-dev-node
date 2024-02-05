@@ -16,16 +16,22 @@ async function main() {
     let unsub = await api.tx.sudo.sudo(
       api.tx.workerNodePallet
         .allowAccount(REGISTRAR_ADDRESS)
-
     )
-      .signAndSend(SUDO_KEYRING, ({ status }) => {
-        console.log(status.toHuman());
-        if (status.isFinalized) {
-          console.log("account added to allowed")
+      .signAndSend(SUDO_KEYRING, ({ events }) => {
+        if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
+          console.log('Registrar allowed');
+          unsub();
+          resolve();
+        } else if (events.some(({ event: { method, section } }) => "ExtrinsicFailed" === method && section === "system")) {
+          console.error('Failed to allow registrar');
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+          });
           unsub();
           resolve();
         }
       });
+	});
   });
 
   const keyring = new Keyring({ type: "sr25519" });
@@ -40,9 +46,16 @@ async function main() {
   await new Promise<void>(async (resolve) => {
     let unsub = await api.tx.workerNodePallet
       .signupSolutionRegistrar(registrar_name, registrar_legal_location)
-      .signAndSend(REGISTRAR_KEYRING, ({ status }) => {
-        console.log(status.toHuman());
-        if (status.isFinalized) {
+      .signAndSend(REGISTRAR_KEYRING, ({ events }) => {
+        if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
+          console.log('Registrar signed up');
+          unsub();
+          resolve();
+        } else if (events.some(({ event: { method, section } }) => "ExtrinsicFailed" === method && section === "system")) {
+          console.error('Failed to signup registrar ');
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+          });
           unsub();
           resolve();
         }

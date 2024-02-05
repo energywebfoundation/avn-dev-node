@@ -23,8 +23,16 @@ async function main(): Promise<void> {
         solution_group_namespace,
         stake,
       )
-      .signAndSend(OPERATOR_KEYRING, ({ status }) => {
-        if (status.isFinalized) {
+      .signAndSend(OPERATOR_KEYRING, ({ events }) => {
+        if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
+          console.log('Operator subscribed to solution group');
+          unsub();
+          resolve();
+        } else if (events.some(({ event: { method, section } }) => "ExtrinsicFailed" === method && section === "system")) {
+          console.error('Failed to subscribe to solution group');
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+          });
           unsub();
           resolve();
         }

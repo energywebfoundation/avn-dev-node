@@ -22,8 +22,16 @@ async function main(): Promise<void> {
       .unsubscribeFromSolutionGroup(
         solution_group_namespace,
       )
-      .signAndSend(OPERATOR_KEYRING, ({ status }) => {
-        if (status.isFinalized) {
+      .signAndSend(OPERATOR_KEYRING, ({ events }) => {
+        if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
+          console.log('Operator unsubscribed from solution group');
+          unsub();
+          resolve();
+        } else if (events.some(({ event: { method, section } }) => "ExtrinsicFailed" === method && section === "system")) {
+          console.error('Failed to unsubscribe from solution group');
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+          });
           unsub();
           resolve();
         }

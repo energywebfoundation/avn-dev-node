@@ -26,8 +26,16 @@ async function main(): Promise<void> {
         solutionNamespace,
         1
       )
-      .signAndSend(REGISTRAR_KEYRING, ({ status }) => {
-        if (status.isFinalized) {
+      .signAndSend(REGISTRAR_KEYRING, ({ events }) => {
+        if (events.some((record) => "ExtrinsicSuccess" === record.event.method)) {
+          console.log('Solution activated');
+          unsub();
+          resolve();
+        } else if (events.some((record) => "ExtrinsicFailed" === record.event.method)) {
+          console.error('Failed to activate solution');
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+          });
           unsub();
           resolve();
         }
