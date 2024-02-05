@@ -20,11 +20,11 @@ async function main(): Promise<void> {
         solutionNamespace
       )
       .signAndSend(REGISTRAR_KEYRING, ({ events }) => {
-        if (events.some((record) => "ExtrinsicSuccess" === record.event.method)) {
+        if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
           console.log('Solution removed from group');
           unsub();
           resolve();
-        } else if (events.some((record) => "ExtrinsicFailed" === record.event.method)) {
+        if (events.some(({ event: { method, section } }) => "ExtrinsicFailed" === method && section == "system")) {
           console.error('Failed to remove solution from group');
           events.forEach(({ phase, event: { data, method, section } }) => {
             console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
@@ -41,11 +41,11 @@ async function main(): Promise<void> {
         solutionNamespace
       )
       .signAndSend(REGISTRAR_KEYRING, ({ events }) => {
-        if (events.some((record) => "ExtrinsicSuccess" === record.event.method)) {
+        if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
           console.log('Solution deleted');
           unsub();
           resolve();
-        } else if (events.some((record) => "ExtrinsicFailed" === record.event.method)) {
+        if (events.some(({ event: { method, section } }) => "ExtrinsicFailed" === method && section == "system")) {
           console.error('Failed to delete solution');
           events.forEach(({ phase, event: { data, method, section } }) => {
             console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);

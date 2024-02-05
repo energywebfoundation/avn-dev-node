@@ -47,11 +47,11 @@ async function main(): Promise<void> {
         operation_end_block
       )
       .signAndSend(REGISTRAR_KEYRING, ({ events }) => {
-        if (events.some((record) => "ExtrinsicSuccess" === record.event.method)) {
+        if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
           console.log('Solution group registered');
           unsub();
           resolve();
-        } else if (events.some((record) => "ExtrinsicFailed" === record.event.method)) {
+        if (events.some(({ event: { method, section } }) => "ExtrinsicFailed" === method && section == "system")) {
           console.error('Failed to register solution group');
           events.forEach(({ phase, event: { data, method, section } }) => {
             console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);

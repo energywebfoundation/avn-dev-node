@@ -19,11 +19,11 @@ async function main() {
 
     )
       .signAndSend(SUDO_KEYRING, ({ events }) => {
-        if (events.some((record) => "ExtrinsicSuccess" === record.event.method)) {
+        if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
           console.log('Registrar removed from allowed accounts');
           unsub();
           resolve();
-        } else if (events.some((record) => "ExtrinsicFailed" === record.event.method)) {
+        if (events.some(({ event: { method, section } }) => "ExtrinsicFailed" === method && section == "system")) {
           console.error('Failed to removed registrar from allowed accounts');
           events.forEach(({ phase, event: { data, method, section } }) => {
             console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
