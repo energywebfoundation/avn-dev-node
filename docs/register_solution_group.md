@@ -46,8 +46,16 @@ async function main(): Promise<void> {
         operation_start_block,
         operation_end_block
       )
-      .signAndSend(REGISTRAR_KEYRING, ({ status }) => {
-        if (status.isFinalized) {
+      .signAndSend(REGISTRAR_KEYRING, ({ events }) => {
+        if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
+          console.log('Solution group registered');
+          unsub();
+          resolve();
+        if (events.some(({ event: { method, section } }) => "ExtrinsicFailed" === method && section == "system")) {
+          console.error('Failed to register solution group');
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+          });
           unsub();
           resolve();
         }

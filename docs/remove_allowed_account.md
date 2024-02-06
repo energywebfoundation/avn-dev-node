@@ -18,10 +18,16 @@ async function main() {
         .removeAllowedAccount(REGISTRAR_ADDRESS)
 
     )
-      .signAndSend(SUDO_KEYRING, ({ status }) => {
-        console.log(status.toHuman());
-        if (status.isFinalized) {
-          console.log("account added to allowed")
+      .signAndSend(SUDO_KEYRING, ({ events }) => {
+        if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
+          console.log('Registrar removed from allowed accounts');
+          unsub();
+          resolve();
+        if (events.some(({ event: { method, section } }) => "ExtrinsicFailed" === method && section == "system")) {
+          console.error('Failed to removed registrar from allowed accounts');
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+          });
           unsub();
           resolve();
         }

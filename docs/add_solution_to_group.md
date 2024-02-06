@@ -10,12 +10,21 @@ import { blake2AsHex } from "@polkadot/util-crypto";
 	await new Promise<void>(async (resolve) => {
 		let unsub = await api.tx.workerNodePallet
 			.addSolutionToGroup(groupNamespace, solutionNamespace)
-			.signAndSend(REGISTRAR_KEYRING, ({ status }) => {
-				if (status.isFinalized) {
+			.signAndSend(REGISTRAR_KEYRING, ({ events }) => {
+				if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
+					console.log('Solution added to group');
+					unsub();
+					resolve();
+				if (events.some(({ event: { method, section } }) => "ExtrinsicFailed" === method && section == "system")) {
+					console.error('Failed to add solution to group');
+					events.forEach(({ phase, event: { data, method, section } }) => {
+						console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+					});
 					unsub();
 					resolve();
 				}
 			});
+		});
 	});
 
 
