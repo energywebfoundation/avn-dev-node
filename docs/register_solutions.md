@@ -22,6 +22,7 @@ async function main(): Promise<void> {
   const expirationBlock = 100000;
   const maxWaitingThreshold = 60;
   const voteThresholdPercent = 60;
+  const addition_to_extraneous_groups_allowed = false;
   await new Promise<void>(async (resolve) => {
     let unsub = await api.tx.workerNodePallet
       .registerSolution(
@@ -35,6 +36,7 @@ async function main(): Promise<void> {
         expirationBlock,
         maxWaitingThreshold,
         voteThresholdPercent,
+        addition_to_extraneous_groups_allowed,
       )
       .signAndSend(REGISTRAR_KEYRING, ({ status }) => {
         if (status.isFinalized) {
@@ -58,6 +60,7 @@ async function main(): Promise<void> {
         expirationBlock,
         maxWaitingThreshold,
         voteThresholdPercent,
+        addition_to_extraneous_groups_allowed,
       )
       .signAndSend(REGISTRAR_KEYRING, ({ events }) => {
         if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
