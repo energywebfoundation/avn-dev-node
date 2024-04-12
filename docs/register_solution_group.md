@@ -26,6 +26,7 @@ async function main(): Promise<void> {
     allowed_operators: 5,
     // amounts are in units which are 10**(-18) part of 1 AVT. min < max
     staking_amounts: { min: BigInt(1) * ONE_AVT, max: BigInt(3) * ONE_AVT },
+	has_operators_allowlist: false
   }
   const solution_group_reward_config = {
     subscription_reward_per_block: ONE_AVT/BigInt(100),
