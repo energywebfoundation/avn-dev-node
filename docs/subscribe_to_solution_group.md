@@ -4,6 +4,9 @@ import { blake2AsHex } from "@polkadot/util-crypto";
 
 const ONE_AVT = BigInt("1000000000000000000")
 
+// If group has been configured to restrict operators allowed to subscribe, then before subscribing
+// registrar has to allow operator.
+// Allowed operators are restricted if OperatorsConfig.has_operators_allowlist == true
 async function main(): Promise<void> {
   const wsProvider = new WsProvider("ws://localhost:9947"); wss://ewx-dev-parachain-aule-qb9wx41jvm.energyweb.org/ws
   const api = await ApiPromise.create({ provider: wsProvider });
