@@ -22,7 +22,7 @@ const main = async () => {
   // 2 - Create a transaction to call a function using the proxy
   const solutionAdditionTx = api.tx.workerNodePallet.addSolutionToGroup(groupNamespace, solutionNamespace);
 
-  // 2 - Use the delegatee to add solution to group 
+  // 2 - Use the delegate to add solution to group 
   // Create a proxy transaction to call the function on behalf of the stash account
   const proxyCallTx = api.tx.proxy.proxy(stashAccount.address, proxyType, solutionAdditionTx);
 
