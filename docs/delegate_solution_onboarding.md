@@ -1,5 +1,6 @@
 ```ts
 import { ApiPromise, Keyring, WsProvider } from '@polkadot/api';
+const proxyType = 'SolutionToGroupAdder';
 
 const main = async () => {
   const provider = new WsProvider('wss://your-substrate-node-endpoint');
@@ -23,7 +24,7 @@ const main = async () => {
 
   // 2 - Use the delegatee to add solution to group 
   // Create a proxy transaction to call the function on behalf of the stash account
-  const proxyCallTx = api.tx.proxy.proxy(stashAccount.address, 'SolutionRegistrar', solutionAdditionTx);
+  const proxyCallTx = api.tx.proxy.proxy(stashAccount.address, proxyType, solutionAdditionTx);
 
   // Sign and send the proxy call transaction using the proxy account
   await proxyCallTx.signAndSend(proxyAccount, (result) => {
@@ -42,19 +43,16 @@ const main = async () => {
 };
 
 
-const delegateSolitionAddition = async (delegator, delegee, api) => {
-  // Define the custom proxy type
-  // Use createType to ensure the custom proxy type is correctly instantiated
-  const solutionAdditionProxyType = api.createType('ProxyType', 'SolutionRegistrar');
+const delegateSolitionAddition = async (delegator, delegate, api) => {
 
   // Define the delay in number of blocks (0 if no delay is needed)
   const delay = 0;
 
   // Create the transaction to add the proxy
-  const tx = api.tx.proxy.addProxy(delegator.address, solutionAdditionProxyType, delay);
+  const tx = api.tx.proxy.addProxy(delegate.address, proxyType, delay);
 
   // Sign and send the transaction using the stash account
-  const unsub = await tx.signAndSend(stashAccount, (result) => {
+  const unsub = await tx.signAndSend(delegator, (result) => {
     console.log(`Current status is ${result.status}`);
 
     if (result.status.isInBlock) {
