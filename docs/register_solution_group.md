@@ -38,6 +38,7 @@ async function main(): Promise<void> {
   const withdrawal_delay = 5
 
   // Registering of solution group reserves part of the free balance. The amount of the reserved funds can be queried as `registrarDeposit()`
+   // @dev : the withdrawal delay is the number of blocks to wait before withdrawal request is executed
   await new Promise<void>(async (resolve) => {
     let unsub = await api.tx.workerNodePallet
       .solutionGroupRegistration(
