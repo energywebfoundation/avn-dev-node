@@ -35,6 +35,7 @@ async function main(): Promise<void> {
   }
   const operation_start_block = 10
   const operation_end_block = 1000
+  const withdrawal_delay = 5
 
   // Registering of solution group reserves part of the free balance. The amount of the reserved funds can be queried as `registrarDeposit()`
   await new Promise<void>(async (resolve) => {
@@ -45,7 +46,8 @@ async function main(): Promise<void> {
         solution_group_operators_config,
         solution_group_reward_config,
         operation_start_block,
-        operation_end_block
+        operation_end_block,
+        withdrawal_delay
       )
       .signAndSend(REGISTRAR_KEYRING, ({ events }) => {
         if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
