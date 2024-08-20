@@ -19,10 +19,17 @@ async function main(): Promise<void> {
 
  ...register solution group...
 
-// Rewards can be raised by group registrar. Extrinsic can be called multiple times, but will take
-// effect in next period. Each call applies raise to current rewards, not initially configured for
-// group. You can raise reward separately for subscription and voting. If rewards are raised by
-// multiplying of current value, then multiplier can not be 0.
+/** @dev: some considerations on rewards raising :
+  - Rewards can only be raised by group registrar. 
+  - The `raiseGroupRewards` extrinsic can be called multiple times, but will take effect in next period. 
+  - Each call applies raise to current rewards, not initially configured for
+ group. 
+ - You can separately raise subscription rewards and voting rewards.
+ - There a two modes of rewards raising:
+     -  Amount : a direct addition of a specific amount to the current reward value
+     - Times : the current reward value is increased by multiplying it with a specific value
+ - If rewards are raised by multiplying of current value (Times mode), then multiplier can not be 0. 
+ **/
   await new Promise<void>(async (resolve) => {
     let unsub = await api.tx.workerNodePallet.raiseGroupRewards(
 	groupNamespace,
