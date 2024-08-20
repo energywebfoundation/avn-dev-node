@@ -49,7 +49,7 @@ async function main(): Promise<void> {
 		resolve();
 	}
 	if (events.some(({ event: { method, section } }) => "ExtrinsicFailed" === method && section == "system")) {
-		console.error('Failed to register solution group');
+		console.error('Failed to raise solution group rewards');
 		events.forEach(({ phase, event: { data, method, section } }) => {
 			console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
 		});
