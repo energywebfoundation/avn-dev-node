@@ -6,7 +6,11 @@ import BN from 'bn.js';
 const MILLY_UNIT = new BN(10).pow(new BN(15));
 
 async function main(): Promise<void> {
-  const wsProvider = new WsProvider("ws://localhost:9947"); // wss://ewx-dev-parachain-aule-qb9wx41jvm.energyweb.org/ws
+   // set the adequate RPC url to the parachain. 
+  // for a connection to dev parachain: const RPC_URL = "wss://ewx-dev-parachain-aule-qb9wx41jvm.energyweb.org/ws";
+  
+  const RPC_URL = "ws://localhost:9947";
+  const wsProvider = new WsProvider(RPC_URL);
   const api = await ApiPromise.create({ provider: wsProvider });
  const keyring = new Keyring({ type: "sr25519" });
  const REGISTRAR_KEYRING = keyring.addFromUri("//Alice", {
