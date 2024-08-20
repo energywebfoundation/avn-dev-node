@@ -44,7 +44,7 @@ async function main(): Promise<void> {
 	)
   .signAndSend(REGISTRAR_KEYRING, ({ events }) => {
 	if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
-		console.log('Solution group registered');
+		console.log('Reward raised on group');
 		unsub();
 		resolve();
 	}
