@@ -1,3 +1,8 @@
+The [solutionGroupRegistration](https://github.com/energywebfoundation/ewx-worker-solution-pallet/blob/74eb607617170eb7731334866f271cfeb83896f4/src/lib.rs#L1084) extrinsincs registers a solution group.
+
+Performing this actions creates a new group under which EWX solutions can be onboraded
+
+
 ```ts
 import { ApiPromise, WsProvider, Keyring } from "@polkadot/api";
 import { blake2AsHex } from "@polkadot/util-crypto";
@@ -36,10 +41,30 @@ async function main(): Promise<void> {
   const operation_start_block = 10
   const operation_end_block = 1000
   const withdrawal_delay = 5
+  const has_cid_allowance = false;
+  ```
+Note: You can refer to the [allow_new_cid](allow_new_cid.md) documentation to learn more about the `CID allowance` usage.
+```ts
 
-  // Registering of solution group reserves part of the free balance. The amount of the reserved funds can be queried as `registrarDeposit()`
-   // @dev : the withdrawal delay is the number of blocks to wait before withdrawal request is executed
-  await new Promise<void>(async (resolve) => {
+    /**
+     * Registers a solution group
+     *
+     * @param {string} namespace - The namespace of the solution group.
+     * @param {object} solution_group_info - The information about the solution group.
+     * @param {object} solution_group_operators_config - The configuration for solution group operators.
+     * @param {object} solution_group_reward_config - The reward configuration for the solution group.
+     * @param {number} operation_start_block - The starting block number for the operation.
+     * @param {number} operation_end_block - The ending block number for the operation.
+     * @param {number} withdrawal_delay - The number of blocks to wait before withdrawal request is executed
+     * @param {boolean} has_cid_allowance - Indicates if the solution group has CID allowance.
+     *
+     * @returns {Promise<void>} A promise that resolves when the registration is complete.
+     *
+     *  @dev:
+     * - Registering of solution group reserves part of the free balance.
+     * - The amount of the reserved funds can be queried as `registrarDeposit()`
+     */
+    await new Promise<void>(async (resolve) => {
     let unsub = await api.tx.workerNodePallet
       .solutionGroupRegistration(
         namespace,
@@ -48,7 +73,8 @@ async function main(): Promise<void> {
         solution_group_reward_config,
         operation_start_block,
         operation_end_block,
-        withdrawal_delay
+        withdrawal_delay,
+        has_cid_allowance,
       )
       .signAndSend(REGISTRAR_KEYRING, ({ events }) => {
         if (events.some(({ event: { method, section } }) => "ExtrinsicSuccess" === method && section == "system")) {
