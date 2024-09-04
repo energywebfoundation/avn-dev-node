@@ -63,7 +63,7 @@ listPendingUnsubscriptions()
 	.finally(() => process.exit());
 ```
 
-If we have two scheduled unsubscriptions, the execution of this scripts will have an output similar to :
+If we have two scheduled unsubscriptions, the execution of this script will have an output similar to :
 
 ```js
 Pending scheduled unsubscriptions:
