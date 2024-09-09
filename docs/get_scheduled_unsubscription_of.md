@@ -71,10 +71,25 @@ const calculateScheduleName = (operator, solutionGroupNamespace) => {
 Below is an illustration of how the `getScheduledUnsubscriptionOf` can be used :
 
 ```ts
-const operator = "5C8GgQFP3X87mgN7kuFvqnptBo14DvyKiEgE3CuHhtWqEspP";
-const solutionGroupNamespace = "2k17ytp2ei";
+const main = async () => {
+  const operator = "5HidH4dPA3uTbhXMrL63s34bV31MksJHKiUrBQMDRee8d2z3";
+  const solutionGroupNamespace = "ulwea0aiw7";
+  const scheduledUnsubscriptionInfo = await getScheduledUnsubscriptionOf(operator, solutionGroupNamespace);
+  console.log("\nUnsubcription infos", scheduledUnsubscriptionInfo);
+};
 
-getScheduledUnsubscriptionOf(operator, solutionGroupNamespace)
-  .catch(console.error)
-  .finally(() => process.exit());
+main()
+	.catch(console.error)
+	.finally(() => process.exit());
+```
+
+Script output:
+
+```shell
+Unsubcription infos {
+  operator: '5HidH4dPA3uTbhXMrL63s34bV31MksJHKiUrBQMDRee8d2z3',
+  solutionGroupNamespace: 'ulwea0aiw7',
+  scheduleName: '0x8e45a00ccc7b7ca6a82131cf4c5d66b0f4bbb95287fa278f5b8176ab7d58c644',
+  scheduledAtBlock: 27344
+}
 ```
